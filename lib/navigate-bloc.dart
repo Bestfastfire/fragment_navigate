@@ -7,7 +7,7 @@ import 'package:rxdart/rxdart.dart';
 export 'package:fragment_navigate/widgets/widgets-support.dart';
 export 'package:fragment_navigate/navigate-support.dart';
 
-class FragNavigate implements BlocBase{
+class FragNavigate implements BlocBase {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   final _fragment = BehaviorSubject<FullPosit>();
   final Map<dynamic, Posit> _screens = {};
@@ -29,45 +29,42 @@ class FragNavigate implements BlocBase{
   ActionInterface _interface;
 
   static FragNavigate _instance;
-  factory FragNavigate({@required dynamic firstKey,
-                    @required List<Posit> screens,
-
-                    BuildContext drawerContext,
-                    List<BottomPosit> bottomList,
-                    List<ActionPosit> actionsList,
-                    Function(dynamic oldKey, dynamic newKey) onBack,
-                    Function(dynamic oldKey, dynamic newKey) onPut}){
-
+  factory FragNavigate(
+      {@required dynamic firstKey,
+      @required List<Posit> screens,
+      BuildContext drawerContext,
+      List<BottomPosit> bottomList,
+      List<ActionPosit> actionsList,
+      Function(dynamic oldKey, dynamic newKey) onBack,
+      Function(dynamic oldKey, dynamic newKey) onPut}) {
     _instance ??= FragNavigate._internal(
-        onPut: onPut,
-        onBack: onBack,
-        screens: screens,
-        firstKey: firstKey,
-        bottomList: bottomList,
-        actionsList: actionsList,
-        drawerContext: drawerContext,
+      onPut: onPut,
+      onBack: onBack,
+      screens: screens,
+      firstKey: firstKey,
+      bottomList: bottomList,
+      actionsList: actionsList,
+      drawerContext: drawerContext,
     );
     return _instance;
   }
 
-  FragNavigate._internal({@required List<Posit> screens,
-                      @required this.drawerContext,
-                      @required dynamic firstKey,
-                      this.actionsList = const [],
-                      this.bottomList = const [],
-                      this.onBack,
-                      this.onPut}){
-
+  FragNavigate._internal(
+      {@required List<Posit> screens,
+      @required this.drawerContext,
+      @required dynamic firstKey,
+      this.actionsList = const [],
+      this.bottomList = const [],
+      this.onBack,
+      this.onPut}) {
     screens.forEach((i) => _screens[i.key] = i);
     putPosit(key: firstKey, force: true);
   }
 
-  List<Widget> _getActions({@required key}){
-    if(actionsList.isNotEmpty){
-      ActionPosit item = actionsList.firstWhere(
-          (v) => v.keys.contains(key),
-          orElse: () => null
-      );
+  List<Widget> _getActions({@required key}) {
+    if (actionsList.isNotEmpty) {
+      ActionPosit item = actionsList.firstWhere((v) => v.keys.contains(key),
+          orElse: () => null);
 
       return item != null ? item.actions : null;
     }
@@ -75,12 +72,10 @@ class FragNavigate implements BlocBase{
     return null;
   }
 
-  Bottom _getBottom({@required key}){
-    if(bottomList.isNotEmpty){
-      BottomPosit item = bottomList.firstWhere(
-              (v) => v.keys.contains(key),
-          orElse: () => null
-      );
+  Bottom _getBottom({@required key}) {
+    if (bottomList.isNotEmpty) {
+      BottomPosit item = bottomList.firstWhere((v) => v.keys.contains(key),
+          orElse: () => null);
 
       return Bottom.byBottomPosit(bottomPosit: item);
     }
@@ -88,105 +83,91 @@ class FragNavigate implements BlocBase{
     return null;
   }
 
-  action(String tag, {Object params}){
-    if(_interface != null){
+  action(String tag, {Object params}) {
+    if (_interface != null) {
       _interface.action(tag, params: params);
     }
   }
 
-  putPosit({@required dynamic key, bool force = false, bool closeDrawer = true}){
-    if(force || _stack.isEmpty || _stack.last.key != key){
+  putPosit(
+      {@required dynamic key, bool force = false, bool closeDrawer = true}) {
+    if (force || _stack.isEmpty || _stack.last.key != key) {
       _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
 
-      if(_drawerKey.currentState != null && _drawerKey.currentState.isDrawerOpen && closeDrawer){
+      if (_drawerKey.currentState != null &&
+          _drawerKey.currentState.isDrawerOpen &&
+          closeDrawer) {
         Navigator.pop(drawerContext);
-
       }
 
       _stack.add(_screens[key]);
-      _fragment.sink.add(
-          FullPosit.byPosit(
-              posit: _stack.last,
-              bottom: _getBottom(key: key),
-              actions: _getActions(key: key)
-          )
-      );
+      _fragment.sink.add(FullPosit.byPosit(
+          posit: _stack.last,
+          bottom: _getBottom(key: key),
+          actions: _getActions(key: key)));
     }
   }
 
-  putAndReplace({@required dynamic key, bool force = true, bool closeDrawer = true}){
+  putAndReplace(
+      {@required dynamic key, bool force = true, bool closeDrawer = true}) {
     _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
 
     _stack.removeLast();
-    putPosit(
-        key: key,
-        force: force,
-        closeDrawer: closeDrawer
-    );
+    putPosit(key: key, force: force, closeDrawer: closeDrawer);
   }
 
-  putAndClean({@required dynamic key, bool force = true, bool closeDrawer = true}){
+  putAndClean(
+      {@required dynamic key, bool force = true, bool closeDrawer = true}) {
     _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
 
     _stack.clear();
-    putPosit(
-        key: key,
-        force: force,
-        closeDrawer: closeDrawer
-    );
+    putPosit(key: key, force: force, closeDrawer: closeDrawer);
   }
 
-  Future<bool> jumpBack() async{
-    if(_drawerKey.currentState != null && _drawerKey.currentState.isDrawerOpen){
+  Future<bool> jumpBack() async {
+    if (_drawerKey.currentState != null &&
+        _drawerKey.currentState.isDrawerOpen) {
       Navigator.pop(drawerContext);
       return false;
-
-    }else if(_stack.length > 1){
+    } else if (_stack.length > 1) {
       String old = _stack.isNotEmpty ? _stack.last.key : null;
 
       _stack.removeLast();
       _onBack(old, _stack.last.key);
 
-      _fragment.sink.add(
-          FullPosit.byPosit(
-              posit: _stack.last,
-              bottom: _getBottom(key: _stack.last.key),
-              actions: _getActions(key: _stack.last.key)
-          )
-      );
+      _fragment.sink.add(FullPosit.byPosit(
+          posit: _stack.last,
+          bottom: _getBottom(key: _stack.last.key),
+          actions: _getActions(key: _stack.last.key)));
       return false;
-
     }
 
     return true;
   }
 
-  jumpBackToFirst(){
+  jumpBackToFirst() {
     String old = _stack.isNotEmpty ? _stack.last.key : null;
 
-    while(_stack.length > 1){
+    while (_stack.length > 1) {
       _stack.removeLast();
     }
 
     _onBack(old, _stack.last.key);
 
-    _fragment.sink.add(
-        FullPosit.byPosit(
-            posit: _stack.last,
-            bottom: _getBottom(key: _stack.last.key),
-            actions: _getActions(key: _stack.last.key)
-        )
-    );
+    _fragment.sink.add(FullPosit.byPosit(
+        posit: _stack.last,
+        bottom: _getBottom(key: _stack.last.key),
+        actions: _getActions(key: _stack.last.key)));
   }
 
-  _onPut(String old, String newKey){
-    if(onPut != null){
+  _onPut(String old, String newKey) {
+    if (onPut != null) {
       onPut(old, newKey);
     }
   }
 
-  _onBack(String old, String newKey){
-    if(onBack != null){
+  _onBack(String old, String newKey) {
+    if (onBack != null) {
       onBack(old, newKey);
     }
   }

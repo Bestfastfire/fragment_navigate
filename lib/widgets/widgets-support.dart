@@ -6,24 +6,22 @@ class ScreenNavigate extends StatelessWidget {
   final FragNavigate bloc;
   final Widget child;
 
-  const ScreenNavigate({@required this.child, @required this.bloc, this.onBack});
+  const ScreenNavigate(
+      {@required this.child, @required this.bloc, this.onBack});
 
   @override
   Widget build(BuildContext context) {
-    if(child is ActionInterface){
+    if (child is ActionInterface) {
       bloc.setInterface = child;
-
-    }else{
+    } else {
       bloc.setInterface = null;
-
     }
 
     return FadeWidget(
-      child: WillPopScope(
-        onWillPop: bloc.jumpBack,
-        child: child,
-      )
-    );
+        child: WillPopScope(
+      onWillPop: bloc.jumpBack,
+      child: child,
+    ));
   }
 }
 
@@ -42,9 +40,9 @@ class _FadeWidgetState extends State<FadeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(milliseconds: 50)).then((_){
-      if(!isBuildingFade){
-        setState((){
+    Future.delayed(Duration(milliseconds: 50)).then((_) {
+      if (!isBuildingFade) {
+        setState(() {
           isBuildingFade = true;
           state = true;
         });
