@@ -62,7 +62,7 @@ class FragNavigate implements BlocBase {
   }
 
   List<Widget> _getActions({@required key}) {
-    if (actionsList.isNotEmpty) {
+    if (actionsList != null && actionsList.isNotEmpty) {
       ActionPosit item = actionsList.firstWhere((v) => v.keys.contains(key),
           orElse: () => null);
 
@@ -73,14 +73,17 @@ class FragNavigate implements BlocBase {
   }
 
   Bottom _getBottom({@required key}) {
-    if (bottomList.isNotEmpty) {
+    if (bottomList != null && bottomList.isNotEmpty) {
       BottomPosit item = bottomList.firstWhere((v) => v.keys.contains(key),
           orElse: () => null);
 
       return Bottom.byBottomPosit(bottomPosit: item);
     }
 
-    return null;
+    return Bottom(
+        length: 1,
+        child: null
+    );
   }
 
   action(String tag, {Object params}) {
