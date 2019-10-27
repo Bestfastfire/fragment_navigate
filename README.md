@@ -103,7 +103,7 @@ Case the controller of fragments is one Drawer, you need set in build this value
                         actions: s.data.actions,
                         bottom: s.data.bottom.child,
                       ),
-                      drawer: CustomDrawer(bloc: _bloc),
+                      drawer: CustomDrawer(bloc: _fragNav),
                       body: ScreenNavigate(
                           child: s.data.fragment,
                           bloc: _fragNav
@@ -142,7 +142,7 @@ To set actual fragment, title and bottom only make this in scaffold:
         actions: snapshot.data.actions,
         bottom: snapshot.data.bottom.child,
       ),
-      drawer: CustomDrawer(bloc: _bloc),
+      drawer: CustomDrawer(bloc: _fragNav),
       body: ScreenNavigate(
           child: snapshot.data.fragment,
           bloc: _fragNav
