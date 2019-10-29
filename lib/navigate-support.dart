@@ -82,7 +82,7 @@ class FloatingPosit {
   final List<dynamic> keys;
   final Widget child;
 
-  FloatingPosit(this.keys, this.child);
+  FloatingPosit({@required this.keys, @required this.child});
 }
 
 abstract class ActionInterface {

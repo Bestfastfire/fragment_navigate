@@ -7,3 +7,5 @@
 ## [0.1.2] - Add FloatingAction
 
 * Now you can pass FloatingAction like Actions in AppBar and Bottom on FragNavigate construct.
+
+## [0.1.3] - Bug fix
