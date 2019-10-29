@@ -15,24 +15,29 @@ class FullPosit {
   final Bottom bottom;
   final Widget fragment;
   final List<Widget> actions;
+  final Widget floatingAction;
 
   const FullPosit(
       {@required this.key,
       @required this.title,
       @required this.fragment,
       @required this.actions,
-      @required this.bottom});
+      @required this.bottom,
+      @required this.floatingAction});
 
   factory FullPosit.byPosit(
       {@required Posit posit,
       @required List<Widget> actions,
+      @required Widget floatingAction,
       @required Bottom bottom}) {
+
     return FullPosit(
       bottom: bottom,
       key: posit.key,
       actions: actions,
       title: posit.title,
       fragment: posit.fragment,
+      floatingAction: floatingAction
     );
   }
 }
@@ -71,6 +76,13 @@ class BottomPosit {
 
   const BottomPosit(
       {@required this.keys, @required this.length, @required this.child});
+}
+
+class FloatingPosit {
+  final List<dynamic> keys;
+  final Widget child;
+
+  FloatingPosit(this.keys, this.child);
 }
 
 abstract class ActionInterface {

@@ -11,6 +11,7 @@ class FragNavigate implements BlocBase {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   final _fragment = BehaviorSubject<FullPosit>();
   final Map<dynamic, Posit> _screens = {};
+  final List<FloatingPosit> floatingList;
   final List<ActionPosit> actionsList;
   final List<BottomPosit> bottomList;
   final List<Posit> _stack = [];
@@ -35,6 +36,7 @@ class FragNavigate implements BlocBase {
       BuildContext drawerContext,
       List<BottomPosit> bottomList,
       List<ActionPosit> actionsList,
+      List<FloatingPosit> floatingPosit,
       Function(dynamic oldKey, dynamic newKey) onBack,
       Function(dynamic oldKey, dynamic newKey) onPut}) {
     _instance ??= FragNavigate._internal(
@@ -44,6 +46,7 @@ class FragNavigate implements BlocBase {
       firstKey: firstKey,
       bottomList: bottomList,
       actionsList: actionsList,
+      floatingList: floatingPosit,
       drawerContext: drawerContext,
     );
     return _instance;
@@ -53,12 +56,18 @@ class FragNavigate implements BlocBase {
       {@required List<Posit> screens,
       @required this.drawerContext,
       @required dynamic firstKey,
+      this.floatingList = const [],
       this.actionsList = const [],
       this.bottomList = const [],
       this.onBack,
       this.onPut}) {
     screens.forEach((i) => _screens[i.key] = i);
     putPosit(key: firstKey, force: true);
+  }
+
+
+  factory FragNavigate.singleton(){
+    return _instance;
   }
 
   List<Widget> _getActions({@required key}) {
@@ -86,6 +95,17 @@ class FragNavigate implements BlocBase {
     );
   }
 
+  Widget _getFloating({@required key}){
+    if (floatingList != null && floatingList.isNotEmpty) {
+      FloatingPosit item = floatingList.firstWhere((v) => v.keys.contains(key),
+          orElse: () => null);
+
+      return item != null ? item.child : null;
+    }
+
+    return null;
+  }
+
   action(String tag, {Object params}) {
     if (_interface != null) {
       _interface.action(tag, params: params);
@@ -104,10 +124,14 @@ class FragNavigate implements BlocBase {
       }
 
       _stack.add(_screens[key]);
-      _fragment.sink.add(FullPosit.byPosit(
+      _fragment.sink.add(
+        FullPosit.byPosit(
           posit: _stack.last,
           bottom: _getBottom(key: key),
-          actions: _getActions(key: key)));
+          actions: _getActions(key: key),
+          floatingAction: _getFloating(key: key)
+        )
+      );
     }
   }
 
@@ -138,10 +162,15 @@ class FragNavigate implements BlocBase {
       _stack.removeLast();
       _onBack(old, _stack.last.key);
 
-      _fragment.sink.add(FullPosit.byPosit(
-          posit: _stack.last,
-          bottom: _getBottom(key: _stack.last.key),
-          actions: _getActions(key: _stack.last.key)));
+      _fragment.sink.add(
+          FullPosit.byPosit(
+            posit: _stack.last,
+            bottom: _getBottom(key: _stack.last.key),
+            actions: _getActions(key: _stack.last.key),
+            floatingAction: _getFloating(key: _stack.last.key
+          ),
+        )
+      );
       return false;
     }
 
@@ -157,10 +186,14 @@ class FragNavigate implements BlocBase {
 
     _onBack(old, _stack.last.key);
 
-    _fragment.sink.add(FullPosit.byPosit(
+    _fragment.sink.add(
+      FullPosit.byPosit(
         posit: _stack.last,
         bottom: _getBottom(key: _stack.last.key),
-        actions: _getActions(key: _stack.last.key)));
+        actions: _getActions(key: _stack.last.key),
+        floatingAction: _getFloating(key: _stack.last.key)
+      )
+    );
   }
 
   _onPut(String old, String newKey) {
