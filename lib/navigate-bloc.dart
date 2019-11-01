@@ -62,11 +62,10 @@ class FragNavigate implements BlocBase {
       this.onBack,
       this.onPut}) {
     screens.forEach((i) => _screens[i.key] = i);
-    putPosit(key: firstKey, force: true);
+    putPosit(key: firstKey, force: true, callPause: false);
   }
 
-
-  factory FragNavigate.singleton(){
+  factory FragNavigate.singleton() {
     return _instance;
   }
 
@@ -89,13 +88,10 @@ class FragNavigate implements BlocBase {
       return Bottom.byBottomPosit(bottomPosit: item);
     }
 
-    return Bottom(
-        length: 1,
-        child: null
-    );
+    return Bottom(length: 1, child: null);
   }
 
-  Widget _getFloating({@required key}){
+  Widget _getFloating({@required key}) {
     if (floatingList != null && floatingList.isNotEmpty) {
       FloatingPosit item = floatingList.firstWhere((v) => v.keys.contains(key),
           orElse: () => null);
@@ -113,31 +109,32 @@ class FragNavigate implements BlocBase {
   }
 
   putPosit(
-      {@required dynamic key, bool force = false, bool closeDrawer = true, bool callPause = true}) {
+      {@required dynamic key,
+      bool force = false,
+      bool closeDrawer = true,
+      bool callPause = true}) {
     if (force || _stack.isEmpty || _stack.last.key != key) {
       _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
 
       if (_drawerKey.currentState != null &&
-          _drawerKey.currentState.isDrawerOpen && closeDrawer) {
+          _drawerKey.currentState.isDrawerOpen &&
+          closeDrawer) {
         Navigator.pop(drawerContext);
       }
 
-      if(_stack.last.fragment is ActionInterface && callPause){
-        (_stack.last.fragment as ActionInterface).onPause();
+      if (callPause && _interface != null) {
+        _interface.onPause();
       }
 
       _stack.add(_screens[key]);
-      _fragment.sink.add(
-        FullPosit.byPosit(
+      _fragment.sink.add(FullPosit.byPosit(
           posit: _stack.last,
           bottom: _getBottom(key: key),
           actions: _getActions(key: key),
-          floatingAction: _getFloating(key: key)
-        )
-      );
+          floatingAction: _getFloating(key: key)));
 
-      if(_stack.last.fragment is ActionInterface){
-        (_stack.last.fragment as ActionInterface).onPut();
+      if (_interface != null) {
+        _interface.onPut();
       }
     }
   }
@@ -146,24 +143,26 @@ class FragNavigate implements BlocBase {
       {@required dynamic key, bool force = true, bool closeDrawer = true}) {
     _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
 
-    if(_stack.last.fragment is ActionInterface){
-      (_stack.last.fragment as ActionInterface).onReplace();
+    if (_interface != null) {
+      _interface.onReplace();
     }
 
     _stack.removeLast();
-    putPosit(key: key, force: force, closeDrawer: closeDrawer, callPause: false);
+    putPosit(
+        key: key, force: force, closeDrawer: closeDrawer, callPause: false);
   }
 
   putAndClean(
       {@required dynamic key, bool force = true, bool closeDrawer = true}) {
     _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
 
-    if(_stack.last.fragment is ActionInterface){
-      (_stack.last.fragment as ActionInterface).onDie();
+    if (_interface != null) {
+      _interface.onDie();
     }
 
     _stack.clear();
-    putPosit(key: key, force: force, closeDrawer: closeDrawer, callPause: false);
+    putPosit(
+        key: key, force: force, closeDrawer: closeDrawer, callPause: false);
   }
 
   Future<bool> jumpBack() async {
@@ -173,25 +172,22 @@ class FragNavigate implements BlocBase {
       return false;
     } else if (_stack.length > 1) {
       String old = _stack.isNotEmpty ? _stack.last.key : null;
-      if(_stack.last.fragment is ActionInterface){
-        (_stack.last.fragment as ActionInterface).onBackPressed();
+      if (_interface != null) {
+        _interface.onBackPressed();
       }
 
       _stack.removeLast();
       _onBack(old, _stack.last.key);
 
-      _fragment.sink.add(
-          FullPosit.byPosit(
-            posit: _stack.last,
-            bottom: _getBottom(key: _stack.last.key),
-            actions: _getActions(key: _stack.last.key),
-            floatingAction: _getFloating(key: _stack.last.key
-          ),
-        )
-      );
+      _fragment.sink.add(FullPosit.byPosit(
+        posit: _stack.last,
+        bottom: _getBottom(key: _stack.last.key),
+        actions: _getActions(key: _stack.last.key),
+        floatingAction: _getFloating(key: _stack.last.key),
+      ));
 
-      if(_stack.last.fragment is ActionInterface){
-        (_stack.last.fragment as ActionInterface).onResume();
+      if (_interface != null) {
+        _interface.onResume();
       }
       return false;
     }
@@ -203,25 +199,22 @@ class FragNavigate implements BlocBase {
     String old = _stack.isNotEmpty ? _stack.last.key : null;
 
     while (_stack.length > 1) {
-      if(_stack.last.fragment is ActionInterface){
-        (_stack.last.fragment as ActionInterface).onDie();
+      if (_interface != null) {
+        _interface.onDie();
       }
       _stack.removeLast();
     }
 
     _onBack(old, _stack.last.key);
 
-    _fragment.sink.add(
-      FullPosit.byPosit(
+    _fragment.sink.add(FullPosit.byPosit(
         posit: _stack.last,
         bottom: _getBottom(key: _stack.last.key),
         actions: _getActions(key: _stack.last.key),
-        floatingAction: _getFloating(key: _stack.last.key)
-      )
-    );
+        floatingAction: _getFloating(key: _stack.last.key)));
 
-    if(_stack.last.fragment is ActionInterface){
-      (_stack.last.fragment as ActionInterface).onResume();
+    if (_interface != null) {
+      _interface.onResume();
     }
   }
 

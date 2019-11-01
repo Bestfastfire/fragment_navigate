@@ -30,15 +30,13 @@ class FullPosit {
       @required List<Widget> actions,
       @required Widget floatingAction,
       @required Bottom bottom}) {
-
     return FullPosit(
-      bottom: bottom,
-      key: posit.key,
-      actions: actions,
-      title: posit.title,
-      fragment: posit.fragment,
-      floatingAction: floatingAction
-    );
+        bottom: bottom,
+        key: posit.key,
+        actions: actions,
+        title: posit.title,
+        fragment: posit.fragment,
+        floatingAction: floatingAction);
   }
 }
 

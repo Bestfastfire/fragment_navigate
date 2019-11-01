@@ -14,7 +14,15 @@ class ScreenNavigate extends StatelessWidget {
     if (child is ActionInterface) {
       bloc.setInterface = child;
     } else {
-      bloc.setInterface = null;
+      // ignore: invalid_use_of_protected_member
+      if (child is StatefulWidget &&
+          // ignore: invalid_use_of_protected_member
+          (child as StatefulWidget).createState() is ActionInterface) {
+        // ignore: invalid_use_of_protected_member
+        bloc.setInterface = (child as StatefulWidget).createState();
+      } else {
+        bloc.setInterface = null;
+      }
     }
 
     return FadeWidget(
