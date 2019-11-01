@@ -86,5 +86,11 @@ class FloatingPosit {
 }
 
 abstract class ActionInterface {
+  void onPut();
+  void onDie();
+  void onPause();
+  void onResume();
+  void onReplace();
+  void onBackPressed();
   void action(String tag, {Object params});
 }

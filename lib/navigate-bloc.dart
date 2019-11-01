@@ -113,14 +113,17 @@ class FragNavigate implements BlocBase {
   }
 
   putPosit(
-      {@required dynamic key, bool force = false, bool closeDrawer = true}) {
+      {@required dynamic key, bool force = false, bool closeDrawer = true, bool callPause = true}) {
     if (force || _stack.isEmpty || _stack.last.key != key) {
       _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
 
       if (_drawerKey.currentState != null &&
-          _drawerKey.currentState.isDrawerOpen &&
-          closeDrawer) {
+          _drawerKey.currentState.isDrawerOpen && closeDrawer) {
         Navigator.pop(drawerContext);
+      }
+
+      if(_stack.last.fragment is ActionInterface && callPause){
+        (_stack.last.fragment as ActionInterface).onPause();
       }
 
       _stack.add(_screens[key]);
@@ -132,6 +135,10 @@ class FragNavigate implements BlocBase {
           floatingAction: _getFloating(key: key)
         )
       );
+
+      if(_stack.last.fragment is ActionInterface){
+        (_stack.last.fragment as ActionInterface).onPut();
+      }
     }
   }
 
@@ -139,16 +146,24 @@ class FragNavigate implements BlocBase {
       {@required dynamic key, bool force = true, bool closeDrawer = true}) {
     _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
 
+    if(_stack.last.fragment is ActionInterface){
+      (_stack.last.fragment as ActionInterface).onReplace();
+    }
+
     _stack.removeLast();
-    putPosit(key: key, force: force, closeDrawer: closeDrawer);
+    putPosit(key: key, force: force, closeDrawer: closeDrawer, callPause: false);
   }
 
   putAndClean(
       {@required dynamic key, bool force = true, bool closeDrawer = true}) {
     _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
 
+    if(_stack.last.fragment is ActionInterface){
+      (_stack.last.fragment as ActionInterface).onDie();
+    }
+
     _stack.clear();
-    putPosit(key: key, force: force, closeDrawer: closeDrawer);
+    putPosit(key: key, force: force, closeDrawer: closeDrawer, callPause: false);
   }
 
   Future<bool> jumpBack() async {
@@ -158,6 +173,9 @@ class FragNavigate implements BlocBase {
       return false;
     } else if (_stack.length > 1) {
       String old = _stack.isNotEmpty ? _stack.last.key : null;
+      if(_stack.last.fragment is ActionInterface){
+        (_stack.last.fragment as ActionInterface).onBackPressed();
+      }
 
       _stack.removeLast();
       _onBack(old, _stack.last.key);
@@ -171,6 +189,10 @@ class FragNavigate implements BlocBase {
           ),
         )
       );
+
+      if(_stack.last.fragment is ActionInterface){
+        (_stack.last.fragment as ActionInterface).onResume();
+      }
       return false;
     }
 
@@ -181,6 +203,9 @@ class FragNavigate implements BlocBase {
     String old = _stack.isNotEmpty ? _stack.last.key : null;
 
     while (_stack.length > 1) {
+      if(_stack.last.fragment is ActionInterface){
+        (_stack.last.fragment as ActionInterface).onDie();
+      }
       _stack.removeLast();
     }
 
@@ -194,6 +219,10 @@ class FragNavigate implements BlocBase {
         floatingAction: _getFloating(key: _stack.last.key)
       )
     );
+
+    if(_stack.last.fragment is ActionInterface){
+      (_stack.last.fragment as ActionInterface).onResume();
+    }
   }
 
   _onPut(String old, String newKey) {

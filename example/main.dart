@@ -117,6 +117,36 @@ class SecondScreen extends StatelessWidget implements ActionInterface{
   void action(String tag, {Object params}) {
     print('called on secondScreen with tag: $tag');
   }
+
+  @override
+  void onBackPressed() {
+    // TODO: implement onBackPressed
+  }
+
+  @override
+  void onDie() {
+    // TODO: implement onDie
+  }
+
+  @override
+  void onPause() {
+    // TODO: implement onPause
+  }
+
+  @override
+  void onPut() {
+    // TODO: implement onPut
+  }
+
+  @override
+  void onReplace() {
+    // TODO: implement onReplace
+  }
+
+  @override
+  void onResume() {
+    // TODO: implement onResume
+  }
 }
 
 class CustomDrawer extends StatelessWidget {
