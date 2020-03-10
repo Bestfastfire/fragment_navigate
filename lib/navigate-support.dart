@@ -3,10 +3,16 @@ import 'package:flutter/material.dart';
 class Posit {
   final dynamic key;
   final String title;
+  final dynamic icon;
   final Widget fragment;
+  final String drawerTitle;
 
   const Posit(
-      {@required this.key, @required this.title, @required this.fragment});
+      {@required this.key,
+        @required this.title,
+        @required this.icon,
+        @required this.fragment,
+        this.drawerTitle});
 }
 
 class FullPosit {

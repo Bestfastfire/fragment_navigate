@@ -10,11 +10,11 @@ export 'package:fragment_navigate/navigate-support.dart';
 class FragNavigate implements BlocBase {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   final _fragment = BehaviorSubject<FullPosit>();
-  final Map<dynamic, Posit> _screens = {};
+  final Map<dynamic, Posit> screenList = {};
   final List<FloatingPosit> floatingList;
   final List<ActionPosit> actionsList;
   final List<BottomPosit> bottomList;
-  final List<Posit> _stack = [];
+  final List<Posit> stack = [];
   BuildContext drawerContext;
 
   final Function(dynamic oldKey, dynamic newKey) onBack;
@@ -61,7 +61,7 @@ class FragNavigate implements BlocBase {
       this.bottomList = const [],
       this.onBack,
       this.onPut}) {
-    screens.forEach((i) => _screens[i.key] = i);
+    screens.forEach((i) => screenList[i.key] = i);
     putPosit(key: firstKey, force: true, callPause: false);
   }
 
@@ -113,8 +113,8 @@ class FragNavigate implements BlocBase {
       bool force = false,
       bool closeDrawer = true,
       bool callPause = true}) {
-    if (force || _stack.isEmpty || _stack.last.key != key) {
-      _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
+    if (force || stack.isEmpty || stack.last.key != key) {
+      _onPut(stack.isNotEmpty ? stack.last.key : null, key);
 
       if (_drawerKey.currentState != null &&
           _drawerKey.currentState.isDrawerOpen &&
@@ -126,9 +126,9 @@ class FragNavigate implements BlocBase {
         _interface.onPause();
       }
 
-      _stack.add(_screens[key]);
+      stack.add(screenList[key]);
       _fragment.sink.add(FullPosit.byPosit(
-          posit: _stack.last,
+          posit: stack.last,
           bottom: _getBottom(key: key),
           actions: _getActions(key: key),
           floatingAction: _getFloating(key: key)));
@@ -141,26 +141,26 @@ class FragNavigate implements BlocBase {
 
   putAndReplace(
       {@required dynamic key, bool force = true, bool closeDrawer = true}) {
-    _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
+    _onPut(stack.isNotEmpty ? stack.last.key : null, key);
 
     if (_interface != null) {
       _interface.onReplace();
     }
 
-    _stack.removeLast();
+    stack.removeLast();
     putPosit(
         key: key, force: force, closeDrawer: closeDrawer, callPause: false);
   }
 
   putAndClean(
       {@required dynamic key, bool force = true, bool closeDrawer = true}) {
-    _onPut(_stack.isNotEmpty ? _stack.last.key : null, key);
+    _onPut(stack.isNotEmpty ? stack.last.key : null, key);
 
     if (_interface != null) {
       _interface.onDie();
     }
 
-    _stack.clear();
+    stack.clear();
     putPosit(
         key: key, force: force, closeDrawer: closeDrawer, callPause: false);
   }
@@ -170,20 +170,20 @@ class FragNavigate implements BlocBase {
         _drawerKey.currentState.isDrawerOpen) {
       Navigator.pop(drawerContext);
       return false;
-    } else if (_stack.length > 1) {
-      String old = _stack.isNotEmpty ? _stack.last.key : null;
+    } else if (stack.length > 1) {
+      String old = stack.isNotEmpty ? stack.last.key : null;
       if (_interface != null) {
         _interface.onBackPressed();
       }
 
-      _stack.removeLast();
-      _onBack(old, _stack.last.key);
+      stack.removeLast();
+      _onBack(old, stack.last.key);
 
       _fragment.sink.add(FullPosit.byPosit(
-        posit: _stack.last,
-        bottom: _getBottom(key: _stack.last.key),
-        actions: _getActions(key: _stack.last.key),
-        floatingAction: _getFloating(key: _stack.last.key),
+        posit: stack.last,
+        bottom: _getBottom(key: stack.last.key),
+        actions: _getActions(key: stack.last.key),
+        floatingAction: _getFloating(key: stack.last.key),
       ));
 
       if (_interface != null) {
@@ -196,22 +196,22 @@ class FragNavigate implements BlocBase {
   }
 
   jumpBackToFirst() {
-    String old = _stack.isNotEmpty ? _stack.last.key : null;
+    String old = stack.isNotEmpty ? stack.last.key : null;
 
-    while (_stack.length > 1) {
+    while (stack.length > 1) {
       if (_interface != null) {
         _interface.onDie();
       }
-      _stack.removeLast();
+      stack.removeLast();
     }
 
-    _onBack(old, _stack.last.key);
+    _onBack(old, stack.last.key);
 
     _fragment.sink.add(FullPosit.byPosit(
-        posit: _stack.last,
-        bottom: _getBottom(key: _stack.last.key),
-        actions: _getActions(key: _stack.last.key),
-        floatingAction: _getFloating(key: _stack.last.key)));
+        posit: stack.last,
+        bottom: _getBottom(key: stack.last.key),
+        actions: _getActions(key: stack.last.key),
+        floatingAction: _getFloating(key: stack.last.key)));
 
     if (_interface != null) {
       _interface.onResume();

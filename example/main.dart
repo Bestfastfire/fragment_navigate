@@ -29,21 +29,26 @@ class Main extends StatelessWidget {
         Posit(
           key: a,
           title: 'Title A',
+          icon: Icons.settings,
           fragment: Container(color: Colors.amberAccent,)
         ),
         Posit(
           key: b,
           title: 'Title B',
+          drawerTitle: 'Diff in B',
+          icon: Icons.settings,
           fragment: SecondScreen()
         ),
         Posit(
           key: c,
           title: 'Title C',
+          icon: Icons.settings,
           fragment: Container(color: Colors.blueAccent,)
         ),
         Posit(
           key: d,
           title: 'Title D',
+          icon: Icons.settings,
           fragment: Text('qqqq')
         ),
       ],
@@ -153,22 +158,22 @@ class CustomDrawer extends StatelessWidget {
   final FragNavigate fragNav;
   const CustomDrawer({@required this.fragNav});
 
+  Widget _getItem({@required String currentSelect, @required text, @required key, @required icon}){
+    Color _getColor() => currentSelect == key ? Colors.white : Colors.black87;
+
+    return Material(
+        color: currentSelect == key ? Colors.blueAccent : Colors.transparent,
+        child: ListTile(
+          leading: Icon(icon, color: currentSelect == key ? Colors.white : null),
+          selected: currentSelect == key,
+          title: Text(text, style: TextStyle(color: _getColor())),
+          onTap: () => fragNav.putPosit(key: key),
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget _getItem({@required String currentSelect, @required text, @required key}){
-      Color _getColor() => currentSelect == key ? Colors.white : Colors.black87;
-
-      return Material(
-          color: currentSelect == key ? Colors.blueAccent : Colors.transparent,
-          child: ListTile(
-            leading: Icon(Icons.settings, color: currentSelect == key ? Colors.white : null),
-            selected: currentSelect == key,
-            title: Text(text, style: TextStyle(color: _getColor())),
-            onTap: () => fragNav.putPosit(key: key),
-          )
-      );
-    }
-
     return Drawer(
       child: ListView(
         children: <Widget>[
@@ -178,27 +183,12 @@ class CustomDrawer extends StatelessWidget {
               color: Colors.blueAccent,
             ),
           ),
-
-          _getItem(
+          for(Posit item in fragNav.screenList.values) _getItem(
               currentSelect: fragNav.currentKey,
-              text: 'Title A',
-              key: a
-          ),
-          _getItem(
-              currentSelect: fragNav.currentKey,
-              text: 'Title B',
-              key: b
-          ),
-          _getItem(
-              currentSelect: fragNav.currentKey,
-              text: 'Title C',
-              key: c
-          ),
-          _getItem(
-              currentSelect: fragNav.currentKey,
-              text: 'Title D',
-              key: d
-          ),
+              text: item.drawerTitle ?? item.title,
+              key: item.key,
+              icon: item.icon
+          )
         ],
       ),
     );

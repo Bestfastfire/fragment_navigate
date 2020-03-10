@@ -13,3 +13,8 @@
 ## [0.1.4] - Add lifecycle in ActionInterface of "fragments"
 
 ## [0.1.4+1] - Bug fix
+
+## [1.0.0] - Stable
+
+* Add icon and drawer title in Posit object
+* Access of list of screens and stack
