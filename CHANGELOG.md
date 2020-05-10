@@ -18,3 +18,7 @@
 
 * Add icon and drawer title in Posit object
 * Access of list of screens and stack
+
+## [1.0.0+1] - Level Permission
+
+* Add level permission to pass with screens posits.

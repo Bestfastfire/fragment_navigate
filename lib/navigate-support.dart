@@ -6,13 +6,15 @@ class Posit {
   final dynamic icon;
   final Widget fragment;
   final String drawerTitle;
+  final dynamic permissionLevel;
 
   const Posit(
       {@required this.key,
-        @required this.title,
-        @required this.icon,
-        @required this.fragment,
-        this.drawerTitle});
+      @required this.title,
+      @required this.icon,
+      @required this.fragment,
+      this.permissionLevel,
+      this.drawerTitle});
 }
 
 class FullPosit {

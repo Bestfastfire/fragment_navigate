@@ -177,3 +177,9 @@ To change fragment you can call in `FragNavigate` methods:
     putAndClean(key, force => default false, closeDrawer => default true); //put and clean stack
     jumpBack(); //back to last in stack, it is called automatically if you click in back buttom
     jumpBackToFirst(); //back to first in stack and clean it
+
+## Help Maintenance
+
+I've been maintaining quite many repos these days and burning out slowly. If you could help me cheer up, buying me a cup of coffee will make my life really happy and get much energy out of it.
+
+<a href="https://www.buymeacoffee.com/RtrHv1C" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
