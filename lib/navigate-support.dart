@@ -97,6 +97,6 @@ abstract class ActionInterface {
   void onPause();
   void onResume();
   void onReplace();
-  void onBackPressed();
+  Future<bool> onBackPressed();
   void action(String tag, {Object params});
 }

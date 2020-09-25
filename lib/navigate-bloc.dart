@@ -1,5 +1,4 @@
 import 'package:fragment_navigate/navigate-support.dart';
-import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
@@ -7,7 +6,11 @@ import 'package:rxdart/rxdart.dart';
 export 'package:fragment_navigate/widgets/widgets-support.dart';
 export 'package:fragment_navigate/navigate-support.dart';
 
-class FragNavigate implements BlocBase {
+abstract class _BlocBase {
+  void dispose();
+}
+
+class FragNavigate implements _BlocBase {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   final _fragment = BehaviorSubject<FullPosit>();
   final Map<dynamic, Posit> screenList = {};
@@ -173,7 +176,9 @@ class FragNavigate implements BlocBase {
     } else if (stack.length > 1) {
       String old = stack.isNotEmpty ? stack.last.key : null;
       if (_interface != null) {
-        _interface.onBackPressed();
+        if (!await _interface.onBackPressed()) {
+          return false;
+        }
       }
 
       stack.removeLast();
@@ -231,19 +236,5 @@ class FragNavigate implements BlocBase {
   }
 
   @override
-  void dispose() {
-    _fragment.close();
-  }
-
-  @override
-  void addListener(listener) {}
-
-  @override
-  bool get hasListeners => null;
-
-  @override
-  void notifyListeners() {}
-
-  @override
-  void removeListener(listener) {}
+  void dispose() => _fragment.close();
 }

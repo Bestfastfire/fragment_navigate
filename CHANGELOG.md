@@ -1,3 +1,6 @@
+## [1.1.0] - OnBackPressed
+* Now, in ActionInterface, the method "onBackPressed" need return true or false to complete the back function.
+
 ## [1.0.1] - Bug fix
 
 ## [1.0.0+1] - Level Permission

@@ -124,8 +124,8 @@ class SecondScreen extends StatelessWidget implements ActionInterface{
   }
 
   @override
-  void onBackPressed() {
-    // TODO: implement onBackPressed
+  Future<bool> onBackPressed() async{
+    return true;
   }
 
   @override
