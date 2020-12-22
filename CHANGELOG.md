@@ -1,3 +1,5 @@
+## [1.1.0+2] - Format
+
 ## [1.1.0+1] - Fix dependencies and add method `jumpBackTo`
 
 ## [1.1.0] - OnBackPressed

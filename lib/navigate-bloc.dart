@@ -37,6 +37,7 @@ class FragNavigate implements _BlocBase {
 
   /// OnBack function
   final Function(dynamic oldKey, dynamic newKey) onBack;
+
   /// OnPut function
   final Function(dynamic oldKey, dynamic newKey) onPut;
 
@@ -228,26 +229,23 @@ class FragNavigate implements _BlocBase {
   }
 
   /// Jump back to key passed and clean all after
-  jumpBackTo(dynamic key){
-    String old = stack.isNotEmpty
-        ? stack.last.key : null;
+  jumpBackTo(dynamic key) {
+    String old = stack.isNotEmpty ? stack.last.key : null;
     int index = -1;
 
-    for(int i = 0; i < stack.length; i++){
+    for (int i = 0; i < stack.length; i++) {
       final item = stack[i];
 
-      if(item.key.toString() == key.toString()){
+      if (item.key.toString() == key.toString()) {
         index = i;
         break;
-
       }
     }
 
-    if(index > -1){
+    if (index > -1) {
       while (stack.length > index) {
         if (_interface != null) {
           _interface.onDie();
-
         }
 
         stack.removeLast();
@@ -261,9 +259,7 @@ class FragNavigate implements _BlocBase {
           actions: _getActions(key: stack.last.key),
           floatingAction: _getFloating(key: stack.last.key)));
 
-      if (_interface != null)
-        _interface.onResume();
-
+      if (_interface != null) _interface.onResume();
     }
   }
 

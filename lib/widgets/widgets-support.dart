@@ -61,8 +61,8 @@ class _FadeWidgetState extends State<FadeWidget> {
     });
 
     return AnimatedOpacity(
-      opacity: state ? 1.0 : 0.0,
-      duration: Duration(milliseconds: 200),
-      child: widget.child);
+        opacity: state ? 1.0 : 0.0,
+        duration: Duration(milliseconds: 200),
+        child: widget.child);
   }
 }
