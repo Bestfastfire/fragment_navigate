@@ -2,8 +2,8 @@ import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:flutter/material.dart';
 
 class ScreenNavigate extends StatelessWidget {
-  final Function onBack;
   final FragNavigate bloc;
+  final Function onBack;
   final Widget child;
 
   const ScreenNavigate(
@@ -63,7 +63,6 @@ class _FadeWidgetState extends State<FadeWidget> {
     return AnimatedOpacity(
       opacity: state ? 1.0 : 0.0,
       duration: Duration(milliseconds: 200),
-      child: widget.child,
-    );
+      child: widget.child);
   }
 }

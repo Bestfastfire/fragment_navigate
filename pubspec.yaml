@@ -1,6 +1,6 @@
 name: fragment_navigate
 description: A controller to make the effect of swapping fragments like in native Android.
-version: 1.1.0
+version: 1.1.0+1
 homepage: https://github.com/Bestfastfire/Fragment-Navigate
 
 environment:
@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  rxdart: ^0.24.1
+  rxdart: ^0.25.0
 
 dev_dependencies:
   flutter_test:

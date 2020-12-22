@@ -1,3 +1,5 @@
+## [1.1.0+1] - Fix dependencies and add method `jumpBackTo`
+
 ## [1.1.0] - OnBackPressed
 * Now, in ActionInterface, the method "onBackPressed" need return true or false to complete the back function.
 

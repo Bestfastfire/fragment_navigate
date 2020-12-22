@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 
 class Posit {
+  /// Key of posit
   final dynamic key;
+
+  /// Title of posit
   final String title;
+
+  /// Icon of posit
   final dynamic icon;
+
+  /// Fragment of posit
   final Widget fragment;
+
+  /// Drawer title
   final String drawerTitle;
+
+  /// Permision level
   final dynamic permissionLevel;
 
   const Posit(
@@ -49,7 +60,10 @@ class FullPosit {
 }
 
 class Bottom {
+  /// Length of bottom
   final int length;
+
+  /// Child
   final PreferredSizeWidget child;
 
   const Bottom({@required this.length, @required this.child});
@@ -69,15 +83,23 @@ class Bottom {
 }
 
 class ActionPosit {
+  /// List of keys that I have will have these actions
   final List<dynamic> keys;
+
+  /// List of actions
   final List<Widget> actions;
 
   const ActionPosit({@required this.keys, @required this.actions});
 }
 
 class BottomPosit {
+  /// Child
   final PreferredSizeWidget child;
+
+  /// List of keys that I have will have these bottom
   final List<dynamic> keys;
+
+  /// Length
   final int length;
 
   const BottomPosit(
@@ -85,7 +107,10 @@ class BottomPosit {
 }
 
 class FloatingPosit {
+  /// List of keys that I have will have these floating
   final List<dynamic> keys;
+
+  /// Widget
   final Widget child;
 
   FloatingPosit({@required this.keys, @required this.child});

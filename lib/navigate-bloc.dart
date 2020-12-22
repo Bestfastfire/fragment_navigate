@@ -11,22 +11,41 @@ abstract class _BlocBase {
 }
 
 class FragNavigate implements _BlocBase {
+  /// Drawer key to close drawer when call jumpBack
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+
+  /// Fragment stream
   final _fragment = BehaviorSubject<FullPosit>();
+
+  /// Screen Posit List
   final Map<dynamic, Posit> screenList = {};
+
+  /// Floating List
   final List<FloatingPosit> floatingList;
+
+  /// Action List
   final List<ActionPosit> actionsList;
+
+  /// Bottom List
   final List<BottomPosit> bottomList;
+
+  /// Stack List
   final List<Posit> stack = [];
+
+  /// Drawer context
   BuildContext drawerContext;
 
+  /// OnBack function
   final Function(dynamic oldKey, dynamic newKey) onBack;
+  /// OnPut function
   final Function(dynamic oldKey, dynamic newKey) onPut;
 
+  /// Fragment stream
   Stream<FullPosit> get outStreamFragment => _fragment.stream;
   dynamic get currentKey => _fragment.stream.value.key;
   GlobalKey<ScaffoldState> get drawerKey => _drawerKey;
 
+  /// Drawer controller
   set setDrawerContext(BuildContext c) => drawerContext = c;
   set setInterface(Object obj) => _interface = obj;
 
@@ -72,6 +91,7 @@ class FragNavigate implements _BlocBase {
     return _instance;
   }
 
+  /// Get actions in appBar
   List<Widget> _getActions({@required key}) {
     if (actionsList != null && actionsList.isNotEmpty) {
       ActionPosit item = actionsList.firstWhere((v) => v.keys.contains(key),
@@ -83,6 +103,7 @@ class FragNavigate implements _BlocBase {
     return null;
   }
 
+  /// Get bottom in appBar
   Bottom _getBottom({@required key}) {
     if (bottomList != null && bottomList.isNotEmpty) {
       BottomPosit item = bottomList.firstWhere((v) => v.keys.contains(key),
@@ -94,6 +115,7 @@ class FragNavigate implements _BlocBase {
     return Bottom(length: 1, child: null);
   }
 
+  /// Get widget of floatingButton
   Widget _getFloating({@required key}) {
     if (floatingList != null && floatingList.isNotEmpty) {
       FloatingPosit item = floatingList.firstWhere((v) => v.keys.contains(key),
@@ -105,12 +127,14 @@ class FragNavigate implements _BlocBase {
     return null;
   }
 
+  /// Call action in interface
   action(String tag, {Object params}) {
     if (_interface != null) {
       _interface.action(tag, params: params);
     }
   }
 
+  /// Put new key
   putPosit(
       {@required dynamic key,
       bool force = false,
@@ -142,6 +166,7 @@ class FragNavigate implements _BlocBase {
     }
   }
 
+  /// Put key and replace current
   putAndReplace(
       {@required dynamic key, bool force = true, bool closeDrawer = true}) {
     _onPut(stack.isNotEmpty ? stack.last.key : null, key);
@@ -155,6 +180,7 @@ class FragNavigate implements _BlocBase {
         key: key, force: force, closeDrawer: closeDrawer, callPause: false);
   }
 
+  /// Put key and clean all
   putAndClean(
       {@required dynamic key, bool force = true, bool closeDrawer = true}) {
     _onPut(stack.isNotEmpty ? stack.last.key : null, key);
@@ -168,6 +194,7 @@ class FragNavigate implements _BlocBase {
         key: key, force: force, closeDrawer: closeDrawer, callPause: false);
   }
 
+  /// Jump back to last key
   Future<bool> jumpBack() async {
     if (_drawerKey.currentState != null &&
         _drawerKey.currentState.isDrawerOpen) {
@@ -200,6 +227,47 @@ class FragNavigate implements _BlocBase {
     return true;
   }
 
+  /// Jump back to key passed and clean all after
+  jumpBackTo(dynamic key){
+    String old = stack.isNotEmpty
+        ? stack.last.key : null;
+    int index = -1;
+
+    for(int i = 0; i < stack.length; i++){
+      final item = stack[i];
+
+      if(item.key.toString() == key.toString()){
+        index = i;
+        break;
+
+      }
+    }
+
+    if(index > -1){
+      while (stack.length > index) {
+        if (_interface != null) {
+          _interface.onDie();
+
+        }
+
+        stack.removeLast();
+      }
+
+      _onBack(old, stack.last.key);
+
+      _fragment.sink.add(FullPosit.byPosit(
+          posit: stack.last,
+          bottom: _getBottom(key: stack.last.key),
+          actions: _getActions(key: stack.last.key),
+          floatingAction: _getFloating(key: stack.last.key)));
+
+      if (_interface != null)
+        _interface.onResume();
+
+    }
+  }
+
+  /// Jump back to first key and clean all
   jumpBackToFirst() {
     String old = stack.isNotEmpty ? stack.last.key : null;
 
@@ -223,12 +291,14 @@ class FragNavigate implements _BlocBase {
     }
   }
 
+  /// onPut in class
   _onPut(String old, String newKey) {
     if (onPut != null) {
       onPut(old, newKey);
     }
   }
 
+  /// onBack in class
   _onBack(String old, String newKey) {
     if (onBack != null) {
       onBack(old, newKey);
