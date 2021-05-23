@@ -141,7 +141,7 @@ class FragNavigate implements _BlocBase {
       bool force = false,
       bool closeDrawer = true}) async {
     if (_interface != null) {
-      if (!force || !await _interface.onPut()) {
+      if (!force && !await _interface.onPut()) {
         return false;
       }
     }
@@ -174,7 +174,7 @@ class FragNavigate implements _BlocBase {
       bool force = true,
       bool closeDrawer = true}) async {
     if (_interface != null) {
-      if (!force || !await _interface.onPut()) {
+      if (!force && !await _interface.onPut()) {
         return false;
       }
     }
@@ -191,7 +191,7 @@ class FragNavigate implements _BlocBase {
       bool force = true,
       bool closeDrawer = true}) async {
     if (_interface != null) {
-      if (!force || !await _interface.onPut()) {
+      if (!force && !await _interface.onPut()) {
         return false;
       }
     }

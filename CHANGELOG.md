@@ -1,3 +1,5 @@
+## [1.1.1+1] - Fix onPut with force param
+
 ## [1.1.1] - Change flow of interface
 
 ## [1.1.0+2] - Format
