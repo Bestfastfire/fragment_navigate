@@ -85,7 +85,7 @@ class FragNavigate implements _BlocBase {
       this.onBack,
       this.onPut}) {
     screens.forEach((i) => screenList[i.key] = i);
-    putPosit(key: firstKey, force: true, callPause: false);
+    putPosit(key: firstKey, force: true);
   }
 
   factory FragNavigate.singleton() {
@@ -136,11 +136,16 @@ class FragNavigate implements _BlocBase {
   }
 
   /// Put new key
-  putPosit(
+  Future<bool> putPosit(
       {@required dynamic key,
       bool force = false,
-      bool closeDrawer = true,
-      bool callPause = true}) {
+      bool closeDrawer = true}) async {
+    if (_interface != null) {
+      if (!force || !await _interface.onPut()) {
+        return false;
+      }
+    }
+
     if (force || stack.isEmpty || stack.last.key != key) {
       _onPut(stack.isNotEmpty ? stack.last.key : null, key);
 
@@ -150,10 +155,6 @@ class FragNavigate implements _BlocBase {
         Navigator.pop(drawerContext);
       }
 
-      if (callPause && _interface != null) {
-        _interface.onPause();
-      }
-
       stack.add(screenList[key]);
       _fragment.sink.add(FullPosit.byPosit(
           posit: stack.last,
@@ -161,38 +162,44 @@ class FragNavigate implements _BlocBase {
           actions: _getActions(key: key),
           floatingAction: _getFloating(key: key)));
 
-      if (_interface != null) {
-        _interface.onPut();
-      }
+      return true;
     }
+
+    return false;
   }
 
   /// Put key and replace current
-  putAndReplace(
-      {@required dynamic key, bool force = true, bool closeDrawer = true}) {
-    _onPut(stack.isNotEmpty ? stack.last.key : null, key);
-
+  Future<bool> putAndReplace(
+      {@required dynamic key,
+      bool force = true,
+      bool closeDrawer = true}) async {
     if (_interface != null) {
-      _interface.onReplace();
+      if (!force || !await _interface.onPut()) {
+        return false;
+      }
     }
 
+    _onPut(stack.isNotEmpty ? stack.last.key : null, key);
+
     stack.removeLast();
-    putPosit(
-        key: key, force: force, closeDrawer: closeDrawer, callPause: false);
+    return await putPosit(key: key, force: force, closeDrawer: closeDrawer);
   }
 
   /// Put key and clean all
-  putAndClean(
-      {@required dynamic key, bool force = true, bool closeDrawer = true}) {
-    _onPut(stack.isNotEmpty ? stack.last.key : null, key);
-
+  Future<bool> putAndClean(
+      {@required dynamic key,
+      bool force = true,
+      bool closeDrawer = true}) async {
     if (_interface != null) {
-      _interface.onDie();
+      if (!force || !await _interface.onPut()) {
+        return false;
+      }
     }
 
+    _onPut(stack.isNotEmpty ? stack.last.key : null, key);
     stack.clear();
-    putPosit(
-        key: key, force: force, closeDrawer: closeDrawer, callPause: false);
+
+    return await putPosit(key: key, force: force, closeDrawer: closeDrawer);
   }
 
   /// Jump back to last key
@@ -204,7 +211,7 @@ class FragNavigate implements _BlocBase {
     } else if (stack.length > 1) {
       String old = stack.isNotEmpty ? stack.last.key : null;
       if (_interface != null) {
-        if (!await _interface.onBackPressed()) {
+        if (!await _interface.onBack()) {
           return false;
         }
       }
@@ -219,9 +226,6 @@ class FragNavigate implements _BlocBase {
         floatingAction: _getFloating(key: stack.last.key),
       ));
 
-      if (_interface != null) {
-        _interface.onResume();
-      }
       return false;
     }
 
@@ -244,10 +248,6 @@ class FragNavigate implements _BlocBase {
 
     if (index > -1) {
       while (stack.length > index) {
-        if (_interface != null) {
-          _interface.onDie();
-        }
-
         stack.removeLast();
       }
 
@@ -258,19 +258,22 @@ class FragNavigate implements _BlocBase {
           bottom: _getBottom(key: stack.last.key),
           actions: _getActions(key: stack.last.key),
           floatingAction: _getFloating(key: stack.last.key)));
-
-      if (_interface != null) _interface.onResume();
     }
   }
 
   /// Jump back to first key and clean all
-  jumpBackToFirst() {
+  Future<bool> jumpBackToFirst() async {
     String old = stack.isNotEmpty ? stack.last.key : null;
 
-    while (stack.length > 1) {
+    if (stack.length > 1) {
       if (_interface != null) {
-        _interface.onDie();
+        if (!await _interface.onBack()) {
+          return false;
+        }
       }
+    }
+
+    while (stack.length > 1) {
       stack.removeLast();
     }
 
@@ -282,9 +285,7 @@ class FragNavigate implements _BlocBase {
         actions: _getActions(key: stack.last.key),
         floatingAction: _getFloating(key: stack.last.key)));
 
-    if (_interface != null) {
-      _interface.onResume();
-    }
+    return true;
   }
 
   /// onPut in class

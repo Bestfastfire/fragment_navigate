@@ -47,7 +47,8 @@ class _FadeWidgetState extends State<FadeWidget> {
   bool state = false;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     Future.delayed(Duration(milliseconds: 50)).then((_) {
       if (!isBuildingFade) {
         setState(() {
@@ -59,7 +60,10 @@ class _FadeWidgetState extends State<FadeWidget> {
         state = false;
       }
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return AnimatedOpacity(
         opacity: state ? 1.0 : 0.0,
         duration: Duration(milliseconds: 200),
