@@ -1,4 +1,4 @@
-import 'package:fragment_navigate/navigate-bloc.dart';
+import 'package:fragment_navigate/navigate-control.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -75,20 +75,19 @@ class Main extends StatelessWidget {
     return StreamBuilder<FullPosit>(
         stream: _fragNav.outStreamFragment,
         builder: (con, s) {
-          if (s.data != null) {
+          if (s.data != null)
             return DefaultTabController(
-                length: s.data.bottom.length,
+                length: s.data!.bottom?.length ?? 1,
                 child: Scaffold(
-                  key: _fragNav.drawerKey,
-                  appBar: AppBar(
-                    title: Text(s.data.title),
-                    actions: s.data.actions,
-                    bottom: s.data.bottom.child,
-                  ),
-                  drawer: CustomDrawer(fragNav: _fragNav),
-                  body: ScreenNavigate(child: s.data.fragment, bloc: _fragNav),
-                ));
-          }
+                    key: _fragNav.drawerKey,
+                    appBar: AppBar(
+                      title: Text(s.data!.title ?? 'NULL'),
+                      actions: s.data?.actions,
+                      bottom: s.data?.bottom?.child,
+                    ),
+                    drawer: CustomDrawer(fragNav: _fragNav),
+                    body: ScreenNavigate(
+                        child: s.data!.fragment, control: _fragNav)));
 
           return Container();
         });
@@ -104,7 +103,7 @@ class SecondScreen extends StatelessWidget implements ActionInterface {
   }
 
   @override
-  void action(String tag, {Object params}) {
+  void action(String tag, {dynamic params}) {
     print('called on secondScreen with tag: $tag');
   }
 
@@ -121,13 +120,13 @@ class SecondScreen extends StatelessWidget implements ActionInterface {
 
 class CustomDrawer extends StatelessWidget {
   final FragNavigate fragNav;
-  const CustomDrawer({@required this.fragNav});
+  const CustomDrawer({required this.fragNav});
 
   Widget _getItem(
-      {@required String currentSelect,
-      @required text,
-      @required key,
-      @required icon}) {
+      {required String currentSelect,
+      required text,
+      required key,
+      required icon}) {
     Color _getColor() => currentSelect == key ? Colors.white : Colors.black87;
 
     return Material(

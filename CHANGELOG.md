@@ -1,3 +1,5 @@
+## [1.2.0] - Null safety
+
 ## [1.1.1+1] - Fix onPut with force param
 
 ## [1.1.1] - Change flow of interface

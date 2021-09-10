@@ -5,7 +5,7 @@ class Posit {
   final dynamic key;
 
   /// Title of posit
-  final String title;
+  final String? title;
 
   /// Icon of posit
   final dynamic icon;
@@ -14,41 +14,41 @@ class Posit {
   final Widget fragment;
 
   /// Drawer title
-  final String drawerTitle;
+  final String? drawerTitle;
 
-  /// Permision level
+  /// Permission level
   final dynamic permissionLevel;
 
   const Posit(
-      {@required this.key,
-      @required this.title,
-      @required this.icon,
-      @required this.fragment,
+      {required this.key,
+      required this.fragment,
+      this.title,
+      this.icon,
       this.permissionLevel,
       this.drawerTitle});
 }
 
 class FullPosit {
   final dynamic key;
-  final String title;
-  final Bottom bottom;
+  final String? title;
+  final Bottom? bottom;
   final Widget fragment;
-  final List<Widget> actions;
-  final Widget floatingAction;
+  final List<Widget>? actions;
+  final Widget? floatingAction;
 
   const FullPosit(
-      {@required this.key,
-      @required this.title,
-      @required this.fragment,
-      @required this.actions,
-      @required this.bottom,
-      @required this.floatingAction});
+      {required this.key,
+      required this.title,
+      required this.fragment,
+      required this.actions,
+      required this.bottom,
+      required this.floatingAction});
 
   factory FullPosit.byPosit(
-      {@required Posit posit,
-      @required List<Widget> actions,
-      @required Widget floatingAction,
-      @required Bottom bottom}) {
+      {required Posit posit,
+      List<Widget>? actions,
+      Widget? floatingAction,
+      Bottom? bottom}) {
     return FullPosit(
         bottom: bottom,
         key: posit.key,
@@ -64,14 +64,13 @@ class Bottom {
   final int length;
 
   /// Child
-  final PreferredSizeWidget child;
+  final PreferredSizeWidget? child;
 
-  const Bottom({@required this.length, @required this.child});
+  const Bottom({required this.length, required this.child});
 
-  factory Bottom.byBottomPosit({@required BottomPosit bottomPosit}) {
-    if (bottomPosit != null) {
+  factory Bottom.byBottomPosit({BottomPosit? bottomPosit}) {
+    if (bottomPosit != null)
       return Bottom(length: bottomPosit.length, child: bottomPosit.child);
-    }
 
     return Bottom(length: 1, child: null);
   }
@@ -89,7 +88,7 @@ class ActionPosit {
   /// List of actions
   final List<Widget> actions;
 
-  const ActionPosit({@required this.keys, @required this.actions});
+  const ActionPosit({required this.keys, required this.actions});
 }
 
 class BottomPosit {
@@ -103,7 +102,7 @@ class BottomPosit {
   final int length;
 
   const BottomPosit(
-      {@required this.keys, @required this.length, @required this.child});
+      {required this.keys, required this.length, required this.child});
 }
 
 class FloatingPosit {
@@ -113,7 +112,7 @@ class FloatingPosit {
   /// Widget
   final Widget child;
 
-  FloatingPosit({@required this.keys, @required this.child});
+  FloatingPosit({required this.keys, required this.child});
 }
 
 abstract class ActionInterface {

@@ -5,6 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 export 'package:fragment_navigate/widgets/widgets-support.dart';
 export 'package:fragment_navigate/navigate-support.dart';
+import 'package:collection/collection.dart';
 
 abstract class _BlocBase {
   void dispose();
@@ -21,25 +22,25 @@ class FragNavigate implements _BlocBase {
   final Map<dynamic, Posit> screenList = {};
 
   /// Floating List
-  final List<FloatingPosit> floatingList;
+  final List<FloatingPosit>? floatingList;
 
   /// Action List
-  final List<ActionPosit> actionsList;
+  final List<ActionPosit>? actionsList;
 
   /// Bottom List
-  final List<BottomPosit> bottomList;
+  final List<BottomPosit>? bottomList;
 
   /// Stack List
   final List<Posit> stack = [];
 
   /// Drawer context
-  BuildContext drawerContext;
+  BuildContext? drawerContext;
 
   /// OnBack function
-  final Function(dynamic oldKey, dynamic newKey) onBack;
+  final Function(dynamic oldKey, dynamic newKey)? onBack;
 
   /// OnPut function
-  final Function(dynamic oldKey, dynamic newKey) onPut;
+  final Function(dynamic oldKey, dynamic newKey)? onPut;
 
   /// Fragment stream
   Stream<FullPosit> get outStreamFragment => _fragment.stream;
@@ -48,37 +49,37 @@ class FragNavigate implements _BlocBase {
 
   /// Drawer controller
   set setDrawerContext(BuildContext c) => drawerContext = c;
-  set setInterface(Object obj) => _interface = obj;
+  set setInterface(dynamic obj) => _interface = obj;
 
-  ActionInterface _interface;
+  ActionInterface? _interface;
 
-  static FragNavigate _instance;
+  static FragNavigate? _instance;
   factory FragNavigate(
-      {@required dynamic firstKey,
-      @required List<Posit> screens,
-      BuildContext drawerContext,
-      List<BottomPosit> bottomList,
-      List<ActionPosit> actionsList,
-      List<FloatingPosit> floatingPosit,
-      Function(dynamic oldKey, dynamic newKey) onBack,
-      Function(dynamic oldKey, dynamic newKey) onPut}) {
+      {required dynamic firstKey,
+      required List<Posit> screens,
+      BuildContext? drawerContext,
+      List<BottomPosit>? bottomList,
+      List<ActionPosit>? actionsList,
+      List<FloatingPosit>? floatingPosit,
+      Function(dynamic oldKey, dynamic newKey)? onBack,
+      Function(dynamic oldKey, dynamic newKey)? onPut}) {
     _instance ??= FragNavigate._internal(
-      onPut: onPut,
-      onBack: onBack,
-      screens: screens,
-      firstKey: firstKey,
-      bottomList: bottomList,
-      actionsList: actionsList,
-      floatingList: floatingPosit,
-      drawerContext: drawerContext,
-    );
-    return _instance;
+        onPut: onPut,
+        onBack: onBack,
+        screens: screens,
+        firstKey: firstKey,
+        bottomList: bottomList,
+        actionsList: actionsList,
+        floatingList: floatingPosit,
+        drawerContext: drawerContext);
+
+    return _instance!;
   }
 
   FragNavigate._internal(
-      {@required List<Posit> screens,
-      @required this.drawerContext,
-      @required dynamic firstKey,
+      {required List<Posit> screens,
+      required this.drawerContext,
+      required dynamic firstKey,
       this.floatingList = const [],
       this.actionsList = const [],
       this.bottomList = const [],
@@ -88,15 +89,11 @@ class FragNavigate implements _BlocBase {
     putPosit(key: firstKey, force: true);
   }
 
-  factory FragNavigate.singleton() {
-    return _instance;
-  }
-
   /// Get actions in appBar
-  List<Widget> _getActions({@required key}) {
-    if (actionsList != null && actionsList.isNotEmpty) {
-      ActionPosit item = actionsList.firstWhere((v) => v.keys.contains(key),
-          orElse: () => null);
+  List<Widget>? _getActions({@required key}) {
+    if (actionsList != null && actionsList!.isNotEmpty) {
+      final item =
+          actionsList?.firstWhereOrNull((v) => v.keys.contains(key)) ?? null;
 
       return item != null ? item.actions : null;
     }
@@ -106,9 +103,9 @@ class FragNavigate implements _BlocBase {
 
   /// Get bottom in appBar
   Bottom _getBottom({@required key}) {
-    if (bottomList != null && bottomList.isNotEmpty) {
-      BottomPosit item = bottomList.firstWhere((v) => v.keys.contains(key),
-          orElse: () => null);
+    if (bottomList != null && bottomList!.isNotEmpty) {
+      BottomPosit? item =
+          bottomList?.firstWhereOrNull((v) => v.keys.contains(key));
 
       return Bottom.byBottomPosit(bottomPosit: item);
     }
@@ -117,10 +114,10 @@ class FragNavigate implements _BlocBase {
   }
 
   /// Get widget of floatingButton
-  Widget _getFloating({@required key}) {
-    if (floatingList != null && floatingList.isNotEmpty) {
-      FloatingPosit item = floatingList.firstWhere((v) => v.keys.contains(key),
-          orElse: () => null);
+  Widget? _getFloating({@required key}) {
+    if (floatingList != null && floatingList!.isNotEmpty) {
+      FloatingPosit? item =
+          floatingList?.firstWhereOrNull((v) => v.keys.contains(key));
 
       return item != null ? item.child : null;
     }
@@ -129,19 +126,17 @@ class FragNavigate implements _BlocBase {
   }
 
   /// Call action in interface
-  action(String tag, {Object params}) {
-    if (_interface != null) {
-      _interface.action(tag, params: params);
-    }
+  action(String tag, {dynamic params}) {
+    if (_interface != null) _interface!.action(tag, params: params);
   }
 
   /// Put new key
   Future<bool> putPosit(
-      {@required dynamic key,
+      {required dynamic key,
       bool force = false,
       bool closeDrawer = true}) async {
     if (_interface != null) {
-      if (!force && !await _interface.onPut()) {
+      if (!force && !await _interface!.onPut()) {
         return false;
       }
     }
@@ -150,12 +145,12 @@ class FragNavigate implements _BlocBase {
       _onPut(stack.isNotEmpty ? stack.last.key : null, key);
 
       if (_drawerKey.currentState != null &&
-          _drawerKey.currentState.isDrawerOpen &&
+          _drawerKey.currentState!.isDrawerOpen &&
           closeDrawer) {
-        Navigator.pop(drawerContext);
+        Navigator.pop(drawerContext!);
       }
 
-      stack.add(screenList[key]);
+      stack.add(screenList[key]!);
       _fragment.sink.add(FullPosit.byPosit(
           posit: stack.last,
           bottom: _getBottom(key: key),
@@ -174,7 +169,7 @@ class FragNavigate implements _BlocBase {
       bool force = true,
       bool closeDrawer = true}) async {
     if (_interface != null) {
-      if (!force && !await _interface.onPut()) {
+      if (!force && !await _interface!.onPut()) {
         return false;
       }
     }
@@ -191,7 +186,7 @@ class FragNavigate implements _BlocBase {
       bool force = true,
       bool closeDrawer = true}) async {
     if (_interface != null) {
-      if (!force && !await _interface.onPut()) {
+      if (!force && !await _interface!.onPut()) {
         return false;
       }
     }
@@ -205,13 +200,13 @@ class FragNavigate implements _BlocBase {
   /// Jump back to last key
   Future<bool> jumpBack() async {
     if (_drawerKey.currentState != null &&
-        _drawerKey.currentState.isDrawerOpen) {
-      Navigator.pop(drawerContext);
+        _drawerKey.currentState!.isDrawerOpen) {
+      Navigator.pop(drawerContext!);
       return false;
     } else if (stack.length > 1) {
       String old = stack.isNotEmpty ? stack.last.key : null;
       if (_interface != null) {
-        if (!await _interface.onBack()) {
+        if (!await _interface!.onBack()) {
           return false;
         }
       }
@@ -267,7 +262,7 @@ class FragNavigate implements _BlocBase {
 
     if (stack.length > 1) {
       if (_interface != null) {
-        if (!await _interface.onBack()) {
+        if (!await _interface!.onBack()) {
           return false;
         }
       }
@@ -290,16 +285,12 @@ class FragNavigate implements _BlocBase {
 
   /// onPut in class
   _onPut(String old, String newKey) {
-    if (onPut != null) {
-      onPut(old, newKey);
-    }
+    if (onPut != null) onPut!(old, newKey);
   }
 
   /// onBack in class
   _onBack(String old, String newKey) {
-    if (onBack != null) {
-      onBack(old, newKey);
-    }
+    if (onBack != null) onBack!(old, newKey);
   }
 
   @override
