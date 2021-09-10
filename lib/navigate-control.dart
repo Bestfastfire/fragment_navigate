@@ -244,6 +244,7 @@ class FragNavigate implements _BlocBase {
     if (index > -1) {
       while (stack.length > index) {
         stack.removeLast();
+
       }
 
       _onBack(old, stack.last.key);
@@ -268,9 +269,8 @@ class FragNavigate implements _BlocBase {
       }
     }
 
-    while (stack.length > 1) {
+    while (stack.length > 1)
       stack.removeLast();
-    }
 
     _onBack(old, stack.last.key);
 
@@ -284,12 +284,14 @@ class FragNavigate implements _BlocBase {
   }
 
   /// onPut in class
-  _onPut(String old, String newKey) {
-    if (onPut != null) onPut!(old, newKey);
+  _onPut(dynamic old, dynamic newKey) {
+    if (onPut != null)
+      onPut!(old, newKey);
+
   }
 
   /// onBack in class
-  _onBack(String old, String newKey) {
+  _onBack(dynamic old, dynamic newKey) {
     if (onBack != null) onBack!(old, newKey);
   }
 

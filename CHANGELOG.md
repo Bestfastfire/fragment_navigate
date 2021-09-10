@@ -1,3 +1,5 @@
+## [1.2.0+1] - Bug Fix
+
 ## [1.2.0] - Null safety
 
 ## [1.1.1+1] - Fix onPut with force param
