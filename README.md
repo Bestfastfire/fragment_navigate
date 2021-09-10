@@ -80,7 +80,7 @@ Here you pass one list of `ActionPosit`, to every `ActionPosit`, you parse one l
 To use it, your widget need implements interface: `ActionInterface`, and the action will called in:
 
     @override
-    void action(String tag, {Object params}) {
+    void action(String tag, {dynamic params}) {
         switch(tag){
             case 'tag': ...
         }
@@ -112,7 +112,7 @@ Case the controller of fragments is one Drawer, you need set in build this value
                       drawer: CustomDrawer(bloc: _fragNav),
                       body: ScreenNavigate(
                           child: s.data.fragment,
-                          bloc: _fragNav
+                          control: _fragNav
                       ),
                     )
                 );
@@ -151,7 +151,7 @@ To set actual fragment, title and bottom only make this in scaffold:
       drawer: CustomDrawer(bloc: _fragNav),
       body: ScreenNavigate(
           child: snapshot.data.fragment,
-          bloc: _fragNav
+          control: _fragNav
       ),
     )
     
@@ -160,7 +160,7 @@ In body of `Scaffold`, pass the `ScreenNavigate` like this:
 
     ScreenNavigate(
       child: snapshot.data.fragment,
-      bloc: _fragNav
+      control: _fragNav
     )
     
 It will make effect FadeIn on changed fragments.

@@ -1,3 +1,5 @@
+## [1.2.0+2] - Bug Fix
+
 ## [1.2.0+1] - Bug Fix
 
 ## [1.2.0] - Null safety

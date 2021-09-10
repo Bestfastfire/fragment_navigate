@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Posit {
+class Posit<T> {
   /// Key of posit
   final dynamic key;
 
@@ -16,21 +16,22 @@ class Posit {
   /// Drawer title
   final String? drawerTitle;
 
-  /// Permission level
-  final dynamic permissionLevel;
+  /// Permissions
+  final T? permissions;
 
   const Posit(
       {required this.key,
       required this.fragment,
       this.title,
       this.icon,
-      this.permissionLevel,
+      this.permissions,
       this.drawerTitle});
 }
 
-class FullPosit {
+class FullPosit<T> {
   final dynamic key;
   final String? title;
+  final T? permissions;
   final Bottom? bottom;
   final Widget fragment;
   final List<Widget>? actions;
@@ -42,6 +43,7 @@ class FullPosit {
       required this.fragment,
       required this.actions,
       required this.bottom,
+      this.permissions,
       required this.floatingAction});
 
   factory FullPosit.byPosit(
@@ -55,6 +57,7 @@ class FullPosit {
         actions: actions,
         title: posit.title,
         fragment: posit.fragment,
+        permissions: posit.permissions,
         floatingAction: floatingAction);
   }
 }
@@ -118,5 +121,5 @@ class FloatingPosit {
 abstract class ActionInterface {
   Future<bool> onPut();
   Future<bool> onBack();
-  void action(String tag, {Object params});
+  void action(String tag, {dynamic params});
 }
