@@ -14,14 +14,7 @@ class ScreenNavigate extends StatelessWidget {
     if (child is ActionInterface) {
       control.setInterface = child;
     } else {
-      // ignore: invalid_use_of_protected_member
-      if (child is StatefulWidget &&
-          // ignore: invalid_use_of_protected_member
-          (child as StatefulWidget).createState() is ActionInterface) {
-        // ignore: invalid_use_of_protected_member
-        control.setInterface = (child as StatefulWidget).createState();
-      } else
-        control.setInterface = null;
+      control.setInterface = null;
     }
 
     return FadeWidget(

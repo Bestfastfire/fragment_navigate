@@ -21,25 +21,27 @@ You must first create an object with the following attributes:
     static final _fragNav = FragNavigate(
         firstKey: 'a',
         screens: <Posit>[
-            Posit(
+            // T is typeof "params"
+            Posit<T>(
               key: a,
               title: 'Title A',
-              fragment: Container(color: Colors.amberAccent,)
+              fragmentBuilder: (p) => Container(color: Colors.amberAccent),
+              params: {'value': "x"}
             ),
             Posit(
               key: b,
               title: 'Title B',
-              fragment: Text('Test B...')
+              fragmentBuilder: (p) => Text('Test B...')
             ),
             Posit(
               key: c,
               title: 'Title C',
-              fragment: Container(color: Colors.blueAccent,)
+              fragmentBuilder: (p) => Container(color: Colors.blueAccent,)
             ),
             Posit(
               key: d,
               title: 'Title D',
-              fragment: Text('Test...')
+              fragmentBuilder: (p) => Text(p as String)
             ),
         ],
         actionsList: [
@@ -100,6 +102,11 @@ Case the controller of fragments is one Drawer, you need set in build this value
             stream: _fragNav.outStreamFragment,
             builder: (con, s){
               if(s.data != null){
+                if(s.data!.params is Map){
+                  print('Params passeds: ${s.data?.params}');
+                  
+                }
+            
                 return DefaultTabController(
                     length: s.data.bottom.length,
                     child: Scaffold(
@@ -178,8 +185,8 @@ In every item of Drawer that call one new fragment ou can do it:
 ### Change Fragment
 To change fragment you can call in `FragNavigate` methods:
 
-    putPosit(key, force => default false, closeDrawer => default true); //put new fragment in stack
-    putAndReplace(key, force => default false, closeDrawer => default true); //put and discart atual fragment in stack
-    putAndClean(key, force => default false, closeDrawer => default true); //put and clean stack
+    putPosit<K>(key, force => default false, closeDrawer => default true, K? params => Params to pass for fragmentBuilder); //put new fragment in stack
+    putAndReplace<K>(key, force => default false, closeDrawer => default true, K? params => Params to pass for fragmentBuilder); //put and discart atual fragment in stack
+    putAndClean<K>(key, force => default false, closeDrawer => default true, K? params => Params to pass for fragmentBuilder); //put and clean stack
     jumpBack(); //back to last in stack, it is called automatically if you click in back buttom
     jumpBackToFirst(); //back to first in stack and clean it

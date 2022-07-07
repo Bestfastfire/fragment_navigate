@@ -1,51 +1,51 @@
 import 'package:fragment_navigate/navigate-control.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Main(),
-    );
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const Main());
   }
 }
 
-final String a = 'a';
-final String b = 'b';
-final String c = 'c';
-final String d = 'd';
-
 class Main extends StatelessWidget {
+  static const String a = 'a';
+  static const String b = 'b';
+  static const String c = 'c';
+  static const String d = 'd';
+
   static final FragNavigate _fragNav =
       FragNavigate(firstKey: a, drawerContext: null, screens: <Posit>[
     Posit(
         key: a,
         title: 'Title A',
         icon: Icons.settings,
-        fragment: Container(
-          color: Colors.amberAccent,
-        )),
+        fragmentBuilder: (dynamic p) => Container(color: Colors.amberAccent)),
     Posit(
         key: b,
         title: 'Title B',
         drawerTitle: 'Diff in B',
         icon: Icons.settings,
-        fragment: SecondScreen()),
+        fragmentBuilder: (p) => const SecondScreen()),
     Posit(
         key: c,
         title: 'Title C',
         icon: Icons.settings,
-        fragment: Container(
-          color: Colors.blueAccent,
-        )),
+        fragmentBuilder: (p) => Container(color: Colors.blueAccent)),
     Posit(
-        key: d, title: 'Title D', icon: Icons.settings, fragment: Text('qqqq')),
+        key: d,
+        title: 'Title D',
+        icon: Icons.settings,
+        fragmentBuilder: (p) => Text(p as String)),
   ], actionsList: [
     ActionPosit(keys: [
       a,
@@ -53,13 +53,13 @@ class Main extends StatelessWidget {
       c
     ], actions: [
       IconButton(
-          icon: Icon(Icons.add),
+          icon: const Icon(Icons.add),
           onPressed: () {
             _fragNav.action('teste');
           })
     ])
   ], bottomList: [
-    BottomPosit(
+    const BottomPosit(
         keys: [a, b, c],
         length: 2,
         child: TabBar(
@@ -68,6 +68,8 @@ class Main extends StatelessWidget {
         ))
   ]);
 
+  const Main({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     _fragNav.setDrawerContext = context;
@@ -75,7 +77,11 @@ class Main extends StatelessWidget {
     return StreamBuilder<FullPosit>(
         stream: _fragNav.outStreamFragment,
         builder: (con, s) {
-          if (s.data != null)
+          if (s.data != null) {
+            if (s.data?.params is Map) {
+              print('Params passeds: ${s.data?.params}');
+            }
+
             return DefaultTabController(
                 length: s.data!.bottom?.length ?? 1,
                 child: Scaffold(
@@ -88,6 +94,7 @@ class Main extends StatelessWidget {
                     drawer: CustomDrawer(fragNav: _fragNav),
                     body: ScreenNavigate(
                         child: s.data!.fragment, control: _fragNav)));
+          }
 
           return Container();
         });
@@ -95,6 +102,8 @@ class Main extends StatelessWidget {
 }
 
 class SecondScreen extends StatelessWidget implements ActionInterface {
+  const SecondScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -120,7 +129,7 @@ class SecondScreen extends StatelessWidget implements ActionInterface {
 
 class CustomDrawer extends StatelessWidget {
   final FragNavigate fragNav;
-  const CustomDrawer({required this.fragNav});
+  const CustomDrawer({Key? key, required this.fragNav}) : super(key: key);
 
   Widget _getItem(
       {required String currentSelect,
@@ -136,7 +145,7 @@ class CustomDrawer extends StatelessWidget {
                 Icon(icon, color: currentSelect == key ? Colors.white : null),
             selected: currentSelect == key,
             title: Text(text, style: TextStyle(color: _getColor())),
-            onTap: () => fragNav.putPosit(key: key)));
+            onTap: () => fragNav.putPosit<int>(key: key, params: 1)));
   }
 
   @override
@@ -144,7 +153,7 @@ class CustomDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: <Widget>[
-          DrawerHeader(
+          const DrawerHeader(
             child: Text('Drawer Header'),
             decoration: BoxDecoration(
               color: Colors.blueAccent,

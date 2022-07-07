@@ -1,3 +1,9 @@
+## [2.0.0+1] - Bug Fix
+
+## [2.0.0] - Added possibility to pass params in insert posits
+
+## [1.2.1] - Added onChangeFrag
+
 ## [1.2.0+2] - Bug Fix
 
 ## [1.2.0+1] - Bug Fix

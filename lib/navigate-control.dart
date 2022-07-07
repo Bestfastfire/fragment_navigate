@@ -1,14 +1,21 @@
 import 'package:fragment_navigate/navigate-support.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 export 'package:fragment_navigate/widgets/widgets-support.dart';
 export 'package:fragment_navigate/navigate-support.dart';
-import 'package:collection/collection.dart';
 
 abstract class _BlocBase {
   void dispose();
+}
+
+extension _IterableExtension<T> on Iterable<T> {
+  T? firstWhereOrNull(bool Function(T element) test) {
+    for (var element in this) {
+      if (test(element)) return element;
+    }
+    return null;
+  }
 }
 
 class FragNavigate implements _BlocBase {
@@ -31,7 +38,7 @@ class FragNavigate implements _BlocBase {
   final List<BottomPosit>? bottomList;
 
   /// Stack List
-  final List<Posit> stack = [];
+  final List<FullPosit> stack = [];
 
   /// Drawer context
   BuildContext? drawerContext;
@@ -44,8 +51,8 @@ class FragNavigate implements _BlocBase {
 
   /// Fragment stream
   Stream<FullPosit> get outStreamFragment => _fragment.stream;
-  dynamic get currentKey => _fragment.stream.value.key;
   GlobalKey<ScaffoldState> get drawerKey => _drawerKey;
+  dynamic get currentKey => stack.last.key;
 
   /// Drawer controller
   set setDrawerContext(BuildContext c) => drawerContext = c;
@@ -87,6 +94,28 @@ class FragNavigate implements _BlocBase {
       this.onPut}) {
     screens.forEach((i) => screenList[i.key] = i);
     putPosit(key: firstKey, force: true);
+  }
+
+  factory FragNavigate.restart(
+      {required dynamic firstKey,
+      required List<Posit> screens,
+      BuildContext? drawerContext,
+      List<BottomPosit>? bottomList,
+      List<ActionPosit>? actionsList,
+      List<FloatingPosit>? floatingPosit,
+      Function(dynamic oldKey, dynamic newKey)? onBack,
+      Function(dynamic oldKey, dynamic newKey)? onPut}) {
+    _instance = FragNavigate._internal(
+        onPut: onPut,
+        onBack: onBack,
+        screens: screens,
+        firstKey: firstKey,
+        bottomList: bottomList,
+        actionsList: actionsList,
+        floatingList: floatingPosit,
+        drawerContext: drawerContext);
+
+    return _instance!;
   }
 
   /// Get actions in appBar
@@ -131,10 +160,11 @@ class FragNavigate implements _BlocBase {
   }
 
   /// Put new key
-  Future<bool> putPosit(
+  Future<bool> putPosit<K>(
       {required dynamic key,
       bool force = false,
-      bool closeDrawer = true}) async {
+      bool closeDrawer = true,
+      K? params}) async {
     if (_interface != null) {
       if (!force && !await _interface!.onPut()) {
         return false;
@@ -144,18 +174,21 @@ class FragNavigate implements _BlocBase {
     if (force || stack.isEmpty || stack.last.key != key) {
       _onPut(stack.isNotEmpty ? stack.last.key : null, key);
 
-      if (_drawerKey.currentState != null &&
-          _drawerKey.currentState!.isDrawerOpen &&
-          closeDrawer) {
+      if (closeDrawer &&
+          _drawerKey.currentState != null &&
+          _drawerKey.currentState!.isDrawerOpen) {
         Navigator.pop(drawerContext!);
       }
 
-      stack.add(screenList[key]!);
-      _fragment.sink.add(FullPosit.byPosit(
-          posit: stack.last,
-          bottom: _getBottom(key: key),
+      final _position = FullPosit.byPosit(
+          floatingAction: _getFloating(key: key),
           actions: _getActions(key: key),
-          floatingAction: _getFloating(key: key)));
+          bottom: _getBottom(key: key),
+          posit: screenList[key]!,
+          params: params);
+
+      stack.add(_position);
+      _fragment.sink.add(stack.last);
 
       return true;
     }
@@ -164,9 +197,10 @@ class FragNavigate implements _BlocBase {
   }
 
   /// Put key and replace current
-  Future<bool> putAndReplace(
+  Future<bool> putAndReplace<K>(
       {@required dynamic key,
       bool force = true,
+      K? params,
       bool closeDrawer = true}) async {
     if (_interface != null) {
       if (!force && !await _interface!.onPut()) {
@@ -175,15 +209,17 @@ class FragNavigate implements _BlocBase {
     }
 
     _onPut(stack.isNotEmpty ? stack.last.key : null, key);
-
     stack.removeLast();
-    return await putPosit(key: key, force: force, closeDrawer: closeDrawer);
+
+    return await putPosit(
+        closeDrawer: closeDrawer, params: params, force: force, key: key);
   }
 
   /// Put key and clean all
-  Future<bool> putAndClean(
+  Future<bool> putAndClean<K>(
       {@required dynamic key,
       bool force = true,
+      K? params,
       bool closeDrawer = true}) async {
     if (_interface != null) {
       if (!force && !await _interface!.onPut()) {
@@ -194,7 +230,8 @@ class FragNavigate implements _BlocBase {
     _onPut(stack.isNotEmpty ? stack.last.key : null, key);
     stack.clear();
 
-    return await putPosit(key: key, force: force, closeDrawer: closeDrawer);
+    return await putPosit(
+        key: key, force: force, closeDrawer: closeDrawer, params: params);
   }
 
   /// Jump back to last key
@@ -213,13 +250,7 @@ class FragNavigate implements _BlocBase {
 
       stack.removeLast();
       _onBack(old, stack.last.key);
-
-      _fragment.sink.add(FullPosit.byPosit(
-        posit: stack.last,
-        bottom: _getBottom(key: stack.last.key),
-        actions: _getActions(key: stack.last.key),
-        floatingAction: _getFloating(key: stack.last.key),
-      ));
+      _fragment.sink.add(stack.last);
 
       return false;
     }
@@ -248,11 +279,7 @@ class FragNavigate implements _BlocBase {
 
       _onBack(old, stack.last.key);
 
-      _fragment.sink.add(FullPosit.byPosit(
-          posit: stack.last,
-          bottom: _getBottom(key: stack.last.key),
-          actions: _getActions(key: stack.last.key),
-          floatingAction: _getFloating(key: stack.last.key)));
+      _fragment.sink.add(stack.last);
     }
   }
 
@@ -268,15 +295,12 @@ class FragNavigate implements _BlocBase {
       }
     }
 
-    while (stack.length > 1) stack.removeLast();
+    while (stack.length > 1) {
+      stack.removeLast();
+    }
 
     _onBack(old, stack.last.key);
-
-    _fragment.sink.add(FullPosit.byPosit(
-        posit: stack.last,
-        bottom: _getBottom(key: stack.last.key),
-        actions: _getActions(key: stack.last.key),
-        floatingAction: _getFloating(key: stack.last.key)));
+    _fragment.sink.add(stack.last);
 
     return true;
   }

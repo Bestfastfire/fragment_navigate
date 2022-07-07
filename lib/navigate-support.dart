@@ -11,27 +11,27 @@ class Posit<T> {
   final dynamic icon;
 
   /// Fragment of posit
-  final Widget fragment;
+  final Widget Function(dynamic params) fragmentBuilder;
 
   /// Drawer title
   final String? drawerTitle;
 
-  /// Permissions
-  final T? permissions;
+  /// Params
+  final T? params;
 
   const Posit(
       {required this.key,
-      required this.fragment,
+      required this.fragmentBuilder,
       this.title,
       this.icon,
-      this.permissions,
+      this.params,
       this.drawerTitle});
 }
 
 class FullPosit<T> {
   final dynamic key;
   final String? title;
-  final T? permissions;
+  final T? params;
   final Bottom? bottom;
   final Widget fragment;
   final List<Widget>? actions;
@@ -43,22 +43,23 @@ class FullPosit<T> {
       required this.fragment,
       required this.actions,
       required this.bottom,
-      this.permissions,
+      this.params,
       required this.floatingAction});
 
   factory FullPosit.byPosit(
-      {required Posit posit,
+      {required Posit<T> posit,
       List<Widget>? actions,
+      dynamic params,
       Widget? floatingAction,
       Bottom? bottom}) {
-    return FullPosit(
-        bottom: bottom,
-        key: posit.key,
-        actions: actions,
+    return FullPosit<T>(
+        fragment: posit.fragmentBuilder(params),
+        floatingAction: floatingAction,
+        params: posit.params,
         title: posit.title,
-        fragment: posit.fragment,
-        permissions: posit.permissions,
-        floatingAction: floatingAction);
+        actions: actions,
+        bottom: bottom,
+        key: posit.key);
   }
 }
 
